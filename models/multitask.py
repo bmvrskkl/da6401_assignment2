@@ -111,4 +111,8 @@ class MultiTaskPerceptionModel(nn.Module):
         d = self.dec1(self.up1(d))
         seg_logits = self.seg_out(d)
 
-        return cls_logits, bbox_pred, seg_logits
+        return {
+            "classification": cls_logits,
+            "localization": bbox_pred,
+            "segmentation": seg_logits
+        }
