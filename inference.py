@@ -7,7 +7,7 @@ import matplotlib.patches as patches
 import torchvision.transforms as T
 from PIL import Image
 
-from multitask import MultiTaskPerceptionModel
+from models.multitask import MultiTaskPerceptionModel
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -35,7 +35,11 @@ def run_inference(image_path: str):
     img_disp = np.array(img_pil.resize((224, 224)))
 
     with torch.no_grad():
-        cls_logits, bbox_pred, seg_logits = model(img_t)
+        outputs = model(img_t)
+        cls_logits = outputs["classification"]
+        bbox_pred  = outputs["localization"]
+        seg_logits = outputs["segmentation"]
+
 
     pred_class = cls_logits.argmax(1).item()
     pred_box   = bbox_pred[0].cpu().tolist()   # [cx, cy, w, h] pixel space
