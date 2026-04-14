@@ -19,26 +19,26 @@ class VGG11(nn.Module):
         # Convolutional backbone
         self.block1 = nn.Sequential(
             conv_bn_relu(3, 64),
-            nn.MaxPool2d(kernel_size=2, stride=2),   # 224 -> 112
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
         self.block2 = nn.Sequential(
             conv_bn_relu(64, 128),
-            nn.MaxPool2d(kernel_size=2, stride=2),   # 112 -> 56
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
         self.block3 = nn.Sequential(
             conv_bn_relu(128, 256),
             conv_bn_relu(256, 256),
-            nn.MaxPool2d(kernel_size=2, stride=2),   # 56 -> 28
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
         self.block4 = nn.Sequential(
             conv_bn_relu(256, 512),
             conv_bn_relu(512, 512),
-            nn.MaxPool2d(kernel_size=2, stride=2),   # 28 -> 14
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
         self.block5 = nn.Sequential(
             conv_bn_relu(512, 512),
             conv_bn_relu(512, 512),
-            nn.MaxPool2d(kernel_size=2, stride=2),   # 14 -> 7
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
@@ -66,3 +66,40 @@ class VGG11(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         return self.classifier(x)
+
+
+class VGG11Encoder(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        self.block1 = nn.Sequential(
+            conv_bn_relu(3, 64),
+            nn.MaxPool2d(2, 2),
+        )
+        self.block2 = nn.Sequential(
+            conv_bn_relu(64, 128),
+            nn.MaxPool2d(2, 2),
+        )
+        self.block3 = nn.Sequential(
+            conv_bn_relu(128, 256),
+            conv_bn_relu(256, 256),
+            nn.MaxPool2d(2, 2),
+        )
+        self.block4 = nn.Sequential(
+            conv_bn_relu(256, 512),
+            conv_bn_relu(512, 512),
+            nn.MaxPool2d(2, 2),
+        )
+        self.block5 = nn.Sequential(
+            conv_bn_relu(512, 512),
+            conv_bn_relu(512, 512),
+            nn.MaxPool2d(2, 2),
+        )
+
+    def forward(self, x):
+        x = self.block1(x)
+        x = self.block2(x)
+        x = self.block3(x)
+        x = self.block4(x)
+        x = self.block5(x)
+        return x
